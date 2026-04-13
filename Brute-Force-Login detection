@@ -1,0 +1,38 @@
+Brute Force Login Detection 
+
+                                           Description
+
+Detects potential brute force attacks where multiple failed login attempts are followed by a successful login within a short time frame.
+
+
+
+                                           Detection Logic
+
+If a user account experiences multiple failed login attempts from the same IP address within 5 minutes, followed by a successful login, it may indicate a successful brute force attack.
+
+
+
+                                             Splunk Query
+
+index=windows (EventCode=4625 OR EventCode=4624)
+| bin _time span=5m
+| stats count(eval(EventCode=4625)) as failed_attempts 
+        count(eval(EventCode=4624)) as successful_logins 
+        by user, src_ip, _time
+| where failed_attempts > 5 AND successful_logins > 0
+
+
+
+                                                  Example Scenario
+
+An attacker attempts multiple passwords against a user account. After several failed attempts within a short period, the attacker successfully logs in using the correct password.
+
+
+
+                                     Response Actions
+
+- Immediately reset the affected user’s password
+- Revoke active sessions
+- Investigate the source IP address
+- Check for suspicious activity after login
+- Enforce Multi-Factor Authentication (MFA)
