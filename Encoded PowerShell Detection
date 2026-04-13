@@ -1,0 +1,29 @@
+                                       Description
+
+Detects the use of encoded PowerShell commands, which are commonly used by attackers to hide malicious activity.
+
+
+                                     Detection Logic
+
+If PowerShell is executed with encoded command parameters such as "-enc" or "-EncodedCommand", it may indicate an attempt to obfuscate malicious scripts.
+
+
+                                       Splunk Query
+
+index=windows process="powershell.exe"
+| where like(CommandLine, "%-enc%") OR like(CommandLine, "%EncodedCommand%")
+
+
+
+                                       Example Scenario
+
+A user downloads a malicious file that executes a hidden PowerShell command using encoding to avoid detection. This command may download malware or establish a connection to an external server.
+
+
+                                             Response Actions
+
+- Investigate the full command line execution
+- Decode the Base64 command if possible
+- Identify any external connections
+- Isolate the affected machine if malicious activity is confirmed
+- Check for persistence mechanisms
